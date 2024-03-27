@@ -36,9 +36,7 @@ class Spotify(MetadataInterface):
     }
 
     def authorize(self):
-
         if self.active_metadata():
-
             try:
                 keys = {
                     "url": "https://accounts.spotify.com/api/token",
