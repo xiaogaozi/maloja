@@ -12,3 +12,5 @@ testdata*
 *.xcf
 *.note
 *-old
+
+.venv

@@ -80,3 +80,6 @@ run = [
 	"python3"
 ]
 opt = []
+
+[tool.pyright]
+include = ["maloja"]
