@@ -13,9 +13,9 @@ class Spotify(MetadataInterface):
     settings = {"apiid": "SPOTIFY_API_ID", "secret": "SPOTIFY_API_SECRET"}
 
     metadata = {
-        "trackurl": "https://api.spotify.com/v1/search?q={title}%2520artist%3A{artist}&type=track&access_token={token}",
-        "albumurl": "https://api.spotify.com/v1/search?q={title}%2520artist%3A{artist}&type=album&access_token={token}",
-        "artisturl": "https://api.spotify.com/v1/search?q={artist}&type=artist&access_token={token}",
+        "trackurl": "https://api.spotify.com/v1/search?q={title}%2520artist%3A{artist}&type=track&access_token={token}&limit=50",
+        "albumurl": "https://api.spotify.com/v1/search?q={title}%2520artist%3A{artist}&type=album&access_token={token}&limit=50",
+        "artisturl": "https://api.spotify.com/v1/search?q={artist}&type=artist&access_token={token}&limit=50",
         "response_type": "json",
         "response_parse_tree_track": [
             "tracks",
@@ -28,6 +28,12 @@ class Spotify(MetadataInterface):
         ],  # use album art
         "response_parse_tree_album": ["albums", "items", 0, "images", 0, "url"],
         "response_parse_tree_artist": ["artists", "items", 0, "images", 0, "url"],
+        "response_parse_track_items": ["tracks", "items"],
+        "response_parse_track_item_track_name": ["name"],
+        "response_parse_track_item_imgurl": ["album", "images", 0, "url"],
+        "response_parse_artist_items": ["artists", "items"],
+        "response_parse_artist_item_artist_name": ["name"],
+        "response_parse_artist_item_imgurl": ["images", 0, "url"],
         "response_parse_album_items": ["albums", "items"],
         "response_parse_album_item_artist_name": ["artists", 0, "name"],
         "response_parse_album_item_imgurl": ["images", 0, "url"],

@@ -56,7 +56,7 @@ def get_image_track_all(track):
             try:
                 res = service.get_image_track(track)
                 if res:
-                    log("Got track image for " + str(track) + " from " + service.name)
+                    log(f'Got track image for "{track}" from {service.name}: {res}')
                     return res
                 else:
                     log(f"Could not get track image for {track} from {service.name}")
@@ -72,10 +72,12 @@ def get_image_artist_all(artist):
             try:
                 res = service.get_image_artist(artist)
                 if res:
-                    log("Got artist image for " + str(artist) + " from " + service.name)
+                    log(f'Got artist image for "{artist}" from {service.name}: {res}')
                     return res
                 else:
-                    log(f"Could not get artist image for {artist} from {service.name}")
+                    log(
+                        f'Could not get artist image for "{artist}" from {service.name}'
+                    )
             except Exception as e:
                 log(f"Error getting artist image from {service.name}: {e.__doc__}")
 
@@ -88,10 +90,10 @@ def get_image_album_all(album):
             try:
                 res = service.get_image_album(album)
                 if res:
-                    log("Got album image for " + str(album) + " from " + service.name)
+                    log(f'Got album image for "{album}" from {service.name}: {res}')
                     return res
                 else:
-                    log(f"Could not get album image for {album} from {service.name}")
+                    log(f'Could not get album image for "{album}" from {service.name}')
             except Exception as e:
                 log(f"Error getting album image from {service.name}: {e.__doc__}")
 
@@ -216,18 +218,33 @@ class MetadataInterface(GenericInterface, abstract=True):
 
     def get_image_track(self, track):
         artists, title = track
-        artiststring = urllib.parse.quote(", ".join(artists))
+        artiststring = urllib.parse.quote(", ".join(artists or []))
         titlestring = urllib.parse.quote(title)
+        url = self.metadata["trackurl"].format(
+            artist=artiststring, title=titlestring, **self.settings
+        )
+        log(f'Get track image of "{title}" from {url}')
         response = requests.get(
-            self.metadata["trackurl"].format(
-                artist=artiststring, title=titlestring, **self.settings
-            ),
+            url,
             headers={"User-Agent": self.useragent},
         )
 
         if self.metadata["response_type"] == "json":
             data = response.json()
-            imgurl = self.metadata_parse_response_track(data)
+            if "response_parse_track_items" in self.metadata:
+                # Match track item by track name
+                imgurl = None
+                for item in self._parse_response("response_parse_track_items", data):
+                    track_name = self._parse_response(
+                        "response_parse_track_item_track_name", item
+                    )
+                    if track_name == title:
+                        imgurl = self._parse_response(
+                            "response_parse_track_item_imgurl", item
+                        )
+                        break
+            else:
+                imgurl = self.metadata_parse_response_track(data)
         else:
             imgurl = None
         if imgurl is not None:
@@ -243,7 +260,20 @@ class MetadataInterface(GenericInterface, abstract=True):
 
         if self.metadata["response_type"] == "json":
             data = response.json()
-            imgurl = self.metadata_parse_response_artist(data)
+            if "response_parse_artist_items" in self.metadata:
+                # Match artist item by artist name
+                imgurl = None
+                for item in self._parse_response("response_parse_artist_items", data):
+                    artist_name = self._parse_response(
+                        "response_parse_artist_item_artist_name", item
+                    )
+                    if artist_name == artist:
+                        imgurl = self._parse_response(
+                            "response_parse_artist_item_imgurl", item
+                        )
+                        break
+            else:
+                imgurl = self.metadata_parse_response_artist(data)
         else:
             imgurl = None
         if imgurl is not None:
@@ -279,6 +309,11 @@ class MetadataInterface(GenericInterface, abstract=True):
                 imgurl = self.metadata_parse_response_album(data)
         else:
             imgurl = None
+
+        # The album maybe is a single, try to search for track again.
+        if imgurl is None:
+            imgurl = self.get_image_track(album)
+
         if imgurl is not None:
             imgurl = self.postprocess_url(imgurl)
         time.sleep(self.delay)
