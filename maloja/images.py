@@ -89,11 +89,14 @@ def get_image_from_cache(track_id=None, artist_id=None, album_id=None):
     )
 
     with engine.begin() as conn:
-        op = (
-            DB[table]
-            .select()
-            .where(DB[table].c.id == entity_id, DB[table].c.expire > now)
-        )
+        if malojaconfig["CACHE_EXPIRE_POSITIVE"] == 0:
+            op = DB[table].select().where(DB[table].c.id == entity_id)
+        else:
+            op = (
+                DB[table]
+                .select()
+                .where(DB[table].c.id == entity_id, DB[table].c.expire > now)
+            )
         result = conn.execute(op).all()
     for row in result:
         if row.local:
@@ -118,7 +121,11 @@ def set_image_in_cache(url, track_id=None, artist_id=None, album_id=None, local=
         if url is None:
             expire = now + (malojaconfig["CACHE_EXPIRE_NEGATIVE"] * 24 * 3600)
         else:
-            expire = now + (malojaconfig["CACHE_EXPIRE_POSITIVE"] * 24 * 3600)
+            if malojaconfig["CACHE_EXPIRE_POSITIVE"] == 0:
+                # Never expire
+                expire = 0
+            else:
+                expire = now + (malojaconfig["CACHE_EXPIRE_POSITIVE"] * 24 * 3600)
 
         if not local and malojaconfig["PROXY_IMAGES"] and url is not None:
             localproxyurl = dl_image(url)
