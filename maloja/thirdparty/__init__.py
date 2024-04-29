@@ -294,13 +294,16 @@ class MetadataInterface(GenericInterface, abstract=True):
         if self.metadata["response_type"] == "json":
             data = response.json()
             if "response_parse_album_items" in self.metadata:
-                # Match album item by artist name
+                # Match album item by artist and album name
                 imgurl = None
                 for item in self._parse_response("response_parse_album_items", data):
                     artist_name = self._parse_response(
                         "response_parse_album_item_artist_name", item
                     )
-                    if artist_name in artists:
+                    album_name = self._parse_response(
+                        "response_parse_album_item_name", item
+                    )
+                    if artist_name in artists and album_name == title:
                         imgurl = self._parse_response(
                             "response_parse_album_item_imgurl", item
                         )
