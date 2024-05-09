@@ -36,6 +36,7 @@ class Spotify(MetadataInterface):
         "response_parse_artist_item_imgurl": ["images", 0, "url"],
         "response_parse_album_items": ["albums", "items"],
         "response_parse_album_item_artist_name": ["artists", 0, "name"],
+        "response_parse_album_item_name": ["name"],
         "response_parse_album_item_imgurl": ["images", 0, "url"],
         "required_settings": ["apiid", "secret"],
         "enabled_entity_types": ["artist", "album", "track"],
