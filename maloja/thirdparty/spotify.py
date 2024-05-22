@@ -30,6 +30,8 @@ class Spotify(MetadataInterface):
         "response_parse_tree_artist": ["artists", "items", 0, "images", 0, "url"],
         "response_parse_track_items": ["tracks", "items"],
         "response_parse_track_item_track_name": ["name"],
+        "response_parse_track_item_album_name": ["album", "name"],
+        "response_parse_track_item_artist_name": ["artists", 0, "name"],
         "response_parse_track_item_imgurl": ["album", "images", 0, "url"],
         "response_parse_artist_items": ["artists", "items"],
         "response_parse_artist_item_artist_name": ["name"],

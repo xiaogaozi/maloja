@@ -232,13 +232,19 @@ class MetadataInterface(GenericInterface, abstract=True):
         if self.metadata["response_type"] == "json":
             data = response.json()
             if "response_parse_track_items" in self.metadata:
-                # Match track item by track name
+                # Match track item by track/album name and artist name
                 imgurl = None
                 for item in self._parse_response("response_parse_track_items", data):
                     track_name = self._parse_response(
                         "response_parse_track_item_track_name", item
                     )
-                    if track_name == title:
+                    album_name = self._parse_response(
+                        "response_parse_track_item_album_name", item
+                    )
+                    artist_name = self._parse_response(
+                        "response_parse_track_item_artist_name", item
+                    )
+                    if title in [track_name, album_name] and artist_name in artists:
                         imgurl = self._parse_response(
                             "response_parse_track_item_imgurl", item
                         )
@@ -294,7 +300,7 @@ class MetadataInterface(GenericInterface, abstract=True):
         if self.metadata["response_type"] == "json":
             data = response.json()
             if "response_parse_album_items" in self.metadata:
-                # Match album item by artist and album name
+                # Match album item by album name and artist name
                 imgurl = None
                 for item in self._parse_response("response_parse_album_items", data):
                     artist_name = self._parse_response(
@@ -303,7 +309,7 @@ class MetadataInterface(GenericInterface, abstract=True):
                     album_name = self._parse_response(
                         "response_parse_album_item_name", item
                     )
-                    if artist_name in artists and album_name == title:
+                    if title == album_name and artist_name in artists:
                         imgurl = self._parse_response(
                             "response_parse_album_item_imgurl", item
                         )
