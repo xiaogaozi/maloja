@@ -309,11 +309,19 @@ class MetadataInterface(GenericInterface, abstract=True):
                     album_name = self._parse_response(
                         "response_parse_album_item_name", item
                     )
-                    if title == album_name and artist_name in artists:
-                        imgurl = self._parse_response(
-                            "response_parse_album_item_imgurl", item
-                        )
-                        break
+                    if self.is_compilation_album(item):
+                        # If the album type is compilation, don't check artist name.
+                        if title == album_name:
+                            imgurl = self._parse_response(
+                                "response_parse_album_item_imgurl", item
+                            )
+                            break
+                    else:
+                        if title == album_name and artist_name in artists:
+                            imgurl = self._parse_response(
+                                "response_parse_album_item_imgurl", item
+                            )
+                            break
             else:
                 imgurl = self.metadata_parse_response_album(data)
         else:
@@ -361,6 +369,9 @@ class MetadataInterface(GenericInterface, abstract=True):
 
     def handle_json_result_error(self, result):
         raise InvalidResponse()
+
+    def is_compilation_album(self, item):
+        return False
 
 
 ### useful stuff
