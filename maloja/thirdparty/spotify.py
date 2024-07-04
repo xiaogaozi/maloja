@@ -80,3 +80,6 @@ class Spotify(MetadataInterface):
         result = result.get("tracks") or result.get("albums") or result.get("artists")
         if not result["items"]:
             return True
+
+    def is_compilation_album(self, item):
+        return item.get("album_type") == "compilation"
