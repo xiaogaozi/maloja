@@ -69,12 +69,20 @@ class Spotify(MetadataInterface):
                 else:
                     expire = responsedata.get("expires_in", 3600)
                     self.settings["token"] = responsedata["access_token"]
-                    # log("Successfully authenticated with Spotify")
+                    log("Successfully authenticated with Spotify")
                 t = Timer(expire, self.authorize)
                 t.daemon = True
                 t.start()
             except Exception as e:
-                log("Error while authenticating with Spotify: " + repr(e))
+                retrySec = 30
+                log(
+                    "Error while authenticating with Spotify (will retry after {} seconds): {}".format(
+                        retrySec, repr(e)
+                    )
+                )
+                t = Timer(retrySec, self.authorize)
+                t.daemon = True
+                t.start()
 
     def handle_json_result_error(self, result):
         result = result.get("tracks") or result.get("albums") or result.get("artists")
