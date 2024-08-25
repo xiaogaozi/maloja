@@ -47,6 +47,7 @@ class Spotify(MetadataInterface):
     def authorize(self):
         if self.active_metadata():
             try:
+                log("Start authentication with Spotify")
                 keys = {
                     "url": "https://accounts.spotify.com/api/token",
                     "headers": {
