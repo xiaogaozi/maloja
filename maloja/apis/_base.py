@@ -62,10 +62,10 @@ class APIHandler:
 		# we don't want the api explorer to show the different structures of
 		# third party apis, just mention they exist
 		self.nimrodelapi = API(delay=True)
-		self.nimrodelapi.get("{path}",pass_headers=True)(self.wrapper)
-		self.nimrodelapi.post("{path}",pass_headers=True)(self.wrapper)
-		self.nimrodelapi.get("",pass_headers=True)(self.wrapper)
-		self.nimrodelapi.post("",pass_headers=True)(self.wrapper)
+		self.nimrodelapi.get("{path}",pass_headers=False)(self.wrapper)
+		self.nimrodelapi.post("{path}",pass_headers=False)(self.wrapper)
+		self.nimrodelapi.get("",pass_headers=False)(self.wrapper)
+		self.nimrodelapi.post("",pass_headers=False)(self.wrapper)
 
 
 	def wrapper(self,path:Multi=[],**keys):
