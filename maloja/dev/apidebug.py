@@ -3,7 +3,7 @@ import bottle, waitress
 from ..pkg_global.conf import malojaconfig
 
 from doreah.logging import log
-from nimrodel import EAPI as API
+from nimrodel_fixed import EAPI as API
 
 
 PORT = malojaconfig["PORT"]

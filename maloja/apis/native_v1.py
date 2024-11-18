@@ -9,8 +9,8 @@ from inspect import signature
 from doreah.logging import log
 
 # nimrodel API
-from nimrodel import EAPI as API
-from nimrodel import Multi
+from nimrodel_fixed import EAPI as API
+from nimrodel_fixed import Multi
 
 
 from .. import database

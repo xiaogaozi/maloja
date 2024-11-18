@@ -1,5 +1,5 @@
-from nimrodel import EAPI as API
-from nimrodel import Multi
+from nimrodel_fixed import EAPI as API
+from nimrodel_fixed import Multi
 
 from ._exceptions import *
 

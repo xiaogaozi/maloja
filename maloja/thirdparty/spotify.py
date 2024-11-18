@@ -14,7 +14,7 @@ class Spotify(MetadataInterface):
 
     metadata = {
         "trackurl": "https://api.spotify.com/v1/search?q={title}%2520artist%3A{artist}&type=track&access_token={token}&limit=50",
-        "albumurl": "https://api.spotify.com/v1/search?q={title}%2520artist%3A{artist}&type=album&access_token={token}&limit=50&market=JP",
+        "albumurl": "https://api.spotify.com/v1/search?q={title}%2520artist%3A{artist}&type=album&access_token={token}&limit=50",
         "artisturl": "https://api.spotify.com/v1/search?q={artist}&type=artist&access_token={token}&limit=50",
         "response_type": "json",
         "response_parse_tree_track": [
@@ -47,6 +47,7 @@ class Spotify(MetadataInterface):
     def authorize(self):
         if self.active_metadata():
             try:
+                log("Start authentication with Spotify")
                 keys = {
                     "url": "https://accounts.spotify.com/api/token",
                     "headers": {
@@ -69,12 +70,20 @@ class Spotify(MetadataInterface):
                 else:
                     expire = responsedata.get("expires_in", 3600)
                     self.settings["token"] = responsedata["access_token"]
-                    # log("Successfully authenticated with Spotify")
+                    log("Successfully authenticated with Spotify")
                 t = Timer(expire, self.authorize)
                 t.daemon = True
                 t.start()
             except Exception as e:
-                log("Error while authenticating with Spotify: " + repr(e))
+                retrySec = 30
+                log(
+                    "Error while authenticating with Spotify (will retry after {} seconds): {}".format(
+                        retrySec, repr(e)
+                    )
+                )
+                t = Timer(retrySec, self.authorize)
+                t.daemon = True
+                t.start()
 
     def handle_json_result_error(self, result):
         result = result.get("tracks") or result.get("albums") or result.get("artists")
